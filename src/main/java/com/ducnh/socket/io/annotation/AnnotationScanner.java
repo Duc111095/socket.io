@@ -1,7 +1,9 @@
-package com.ducnh.socket.io;
+package com.ducnh.socket.io.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+
+import com.ducnh.socket.io.namespace.Namespace;
 
 public interface AnnotationScanner {
 

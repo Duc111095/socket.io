@@ -1,5 +1,6 @@
 package com.ducnh.socket.io;
 
+import com.ducnh.socket.io.protocol.Packet;
 
 /**
  * Available client operations

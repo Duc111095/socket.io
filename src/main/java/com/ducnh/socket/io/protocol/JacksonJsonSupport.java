@@ -285,10 +285,10 @@ public class JacksonJsonSupport implements JsonSupport {
 	protected static final Logger log = LoggerFactory.getLogger(JacksonJsonSupport.class);
 	
 	public JacksonJsonSupport() {
-		this(new Module[] {});
+		this(new com.fasterxml.jackson.databind.Module[] {});
 	}
 	
-	public JacksonJsonSupport(Module... modules) {
+	public JacksonJsonSupport(com.fasterxml.jackson.databind.Module... modules) {
 		if (modules != null && modules.length > 0) {
 			objectMapper.registerModules(modules);
 		}

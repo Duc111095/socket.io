@@ -3,9 +3,15 @@ package com.ducnh.socket.io.protocol;
 import java.io.IOException;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.base64.Base64;
 import io.netty.util.CharsetUtil;
 import java.net.URLDecoder;
+import java.util.LinkedList;
+import java.util.Map;
+
+import com.ducnh.socket.io.AckCallback;
 
 public class PacketDecoder {
 
@@ -193,4 +199,128 @@ public class PacketDecoder {
 		}
 	}
 	
+	private Packet addAttachment(ClientHead head, ByteBuf frame, Packet binaryPacket) throws IOException {
+		ByteBuf attachBuf = Base64.encode(frame);
+		binaryPacket.addAttachment(Unpooled.copiedBuffer(attachBuf));
+		attachBuf.release();
+		frame.skipBytes(frame.readableBytes());
+		
+		if (binaryPacket.isAttachmentsLoaded()) {
+			LinkedList<ByteBuf> slices = new LinkedList<ByteBuf>();
+			ByteBuf source = binaryPacket.getDataSource();
+			for (int i = 0; i < binaryPacket.getAttachments().size(); i++) {
+				ByteBuf attachment = binaryPacket.getAttachments().get(i);
+				ByteBuf scanValue = Unpooled.copiedBuffer("{\"_placeholder\":true,\"num\":" + i + "}", CharsetUtil.UTF_8);
+				int pos = PacketEncoder.find(source, scanValue);
+				if (pos == -1) {
+					scanValue = Unpooled.copiedBuffer("{\"num\":" + i + ",\"_placeholder\":true}", CharsetUtil.UTF_8);
+					pos = PacketEncoder.find(source, scanValue);
+					if (pos == -1) {
+						throw new IllegalStateException("Can't find attachment by index: " + i + " in packet source");
+					}
+				}
+				
+				ByteBuf prefixBuf = source.slice(source.readerIndex(), pos - source.readerIndex());
+				slices.add(prefixBuf);
+				slices.add(QUOTES);
+				slices.add(attachment);
+				slices.add(QUOTES);
+				
+				source.readerIndex(pos + scanValue.readableBytes());
+			}
+			slices.add(source.slice());
+			
+			ByteBuf compositeBuf = Unpooled.wrappedBuffer(slices.toArray(new ByteBuf[0]));
+			parseBody(head, compositeBuf, binaryPacket);
+			head.setLastBinaryPacket(null);
+			return binaryPacket;
+		}
+		return new Packet(PacketType.MESSAGE, head.getEngineIOVersion());
+	}
+	
+	private void parseBody(ClientHead head, ByteBuf frame, Packet packet) throws IOException {
+		if (packet.getType() == PacketType.MESSAGE) {
+			if (packet.getSubType() == PacketType.CONNECT 
+					|| packet.getSubType() == PacketType.DISCONNECT) {
+				packet.setNsp(readNamespace(frame, false));
+				if (packet.getSubType() == PacketType.CONNECT && frame.readableBytes() > 0) {
+					final Object authArgs = jsonSupport.readValue(packet.getNsp(), new ByteBufInputStream(frame), Map.class);
+					packet.setData(authArgs);
+				}
+			}
+			
+			if (packet.hasAttachments() && !packet.isAttachmentsLoaded()) {
+				packet.setDataSource(Unpooled.copiedBuffer(frame));
+				frame.skipBytes(frame.readableBytes());
+				head.setLastBinaryPacket(packet);
+				return;
+			}
+			
+			if (packet.hasAttachment() && !packet.isAttachmentsLoaded()) {
+				packet.setDataSource(Unpooled.copiedBuffer(frame));
+				frame.skipBytes(frame.readableBytes());
+				head.setLastBinaryPacket(packet);
+				return;
+			}
+			
+			if (packet.getSubType() == PacketType.ACK 
+					|| packet.getSubType() == PacketType.BINARY_ACK) {
+				AckCallback<?> callback = ackManager.getCallback(head.getSessionId(), packet.getAckId());
+				if (callback != null) {
+					ByteBufInputStream in = new ByteBufInputStream(frame);
+					AckArgs args = jsonSupport.readAckArgs(in, callback);
+					packet.setData(args.getArgs());
+				} else {
+					frame.clear();
+				}
+			}
+			
+			if (packet.getSubType() == PacketType.EVENT 
+					|| packet.getSubType() == PacketType.BINARY_EVENT) {
+				ByteBufInputStream in = new ByteBufInputStream(frame);
+				Event event = jsonSupport.readValue(packet.getNsp(), in, Event.class);
+				packet.setName(event.getName());
+				packet.setData(event.getArgs());
+			}
+		}
+	}
+	
+	private String readNamespace(ByteBuf frame, final boolean defaultToAll) {
+		/**
+		 * namespace post request with url queryString, like
+		 *  /message (v1)
+		 *  /message?a=1, (v2)
+		 *  /message, (v3,v4)
+		 */
+		ByteBuf buffer = frame.slice();
+		
+		boolean withSpecialChar = false;
+		
+		int namespaceFieldEndIndex = buffer.bytesBefore((byte) ',');
+		if (namespaceFieldEndIndex > 0) {
+			withSpecialChar = true;
+		} else {
+			namespaceFieldEndIndex = buffer.readableBytes();
+		}
+		
+		int namespaceEndIndex = buffer.bytesBefore((byte) '?');
+		if (namespaceEndIndex > 0) {
+			withSpecialChar = true;
+		} else {
+			namespaceEndIndex = namespaceFieldEndIndex;
+		}
+		
+		String namespace = readString(buffer, namespaceEndIndex);
+		if (namespace.startsWith("/")) {
+			frame.skipBytes(namespaceFieldEndIndex + (withSpecialChar ? 1 : 0));
+			return namespace;
+		}
+		
+		if (defaultToAll) {
+			// skip this frame
+			frame.skipBytes(frame.readableBytes());
+			return readString(buffer);
+		}
+		return Namespace.DEFAULT_NAME;
+	}
 }
