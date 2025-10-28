@@ -1,0 +1,22 @@
+package com.ducnh.socket.io.messages;
+
+public class OutPacketMessage extends HttpMessage{
+	
+	private final ClientHead clientHead;
+	private final Transport transport;
+	
+	public OutPacketMessage(ClientHead clientHead, Transport transport) {
+		super(clientHead.getOrigin(), clientHead.getSessionId());
+		
+		this.clientHead = clientHead;
+		this.transport = transport;
+	}
+	
+	public Transport getTransport() {
+		return transport;
+	}
+	
+	public ClientHead getClientHead() {
+		return clientHead;
+	}
+}
