@@ -34,11 +34,11 @@ public abstract class AckCallback<T> {
 	/**
 	 * Create AckCallback with timeout
 	 * 
-	 * @param resultClass - resultClass
+	 * @param resultClass2 - resultClass
 	 * @param timeout - callback timeout in seconds
 	 */
-	public AckCallback(Class<T> resultClass, int timeout) {
-		this.resultClass = resultClass;
+	public AckCallback(Class<T> resultClass2, int timeout) {
+		this.resultClass = resultClass2;
 		this.timeout = timeout;
 	}
 	

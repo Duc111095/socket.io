@@ -57,8 +57,9 @@ public class Packet implements Serializable {
 		this.data = data;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getData() {
-		return (T)data;
+		return (T) data;
 	}
 	
 	public Packet withNsp(String namespace, EngineIOVersion engineIOVersion) {
