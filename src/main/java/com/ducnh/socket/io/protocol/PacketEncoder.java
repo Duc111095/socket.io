@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+import com.ducnh.socket.io.Configuration;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
@@ -24,7 +26,7 @@ public class PacketEncoder {
 	private final JsonSupport jsonSupport;
 	private final Configuration configuration;
 	
-	private PacketEncoder(Configuration configuration, JsonSupport jsonSupport) {
+	public PacketEncoder(Configuration configuration, JsonSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 		this.configuration = configuration;
 	}
