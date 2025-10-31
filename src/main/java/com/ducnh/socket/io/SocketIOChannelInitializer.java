@@ -1,6 +1,12 @@
 package com.ducnh.socket.io;
 
+import java.security.KeyStore;
+
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +21,14 @@ import com.ducnh.socket.io.scheduler.HashedWheelTimeoutScheduler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpMessage;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
+import io.netty.handler.ssl.SslHandler;
 
 public class SocketIOChannelInitializer extends ChannelInitializer<Channel> implements DisconnectableHub{
 
@@ -23,7 +37,7 @@ public class SocketIOChannelInitializer extends ChannelInitializer<Channel> impl
 	public static final String WEB_SOCKET_TRANSPORT = "webSocketTransport";
 	public static final String WEB_SOCKET_AGGREGATOR = "webSocketAggregator";
 	public static final String XHR_POLLING_TRANSPORT = "xhrPollingTransport";
-	public static final String AUTHORIZXE_HANDLER = "authorizeHandler";
+	public static final String AUTHORIZE_HANDLER = "authorizeHandler";
 	public static final String PACKET_HANDLER = "packetHandler";
 	public static final String HTTP_ENCODER = "httpEncoder";
 	public static final String HTTP_COMPRESSION = "httpCompression";
@@ -90,5 +104,98 @@ public class SocketIOChannelInitializer extends ChannelInitializer<Channel> impl
 			throw new IllegalStateException(e);
 		}
 		wrongUrlHandler = new WrongUrlHandler();
+	}
+	
+	@Override
+	protected void initChannel(Channel ch) throws Exception {
+		ChannelPipeline pipeline = ch.pipeline();
+		addSslHandler(pipeline);
+		addSocketioHandlers(pipeline);
+	}
+	
+	/**
+	 * Adds the ssl handler
+	 * 
+	 * @param pipeline - channel pipeline
+	 */
+	protected void addSslHandler(ChannelPipeline pipeline) {
+		if (sslContext != null) {
+			SSLEngine engine = sslContext.createSSLEngine();
+			engine.setUseClientMode(false);
+			if (configuration.isNeedClientAuth() && (configuration.getTrustStore() != null)) {
+				engine.setNeedClientAuth(true);
+			}
+			pipeline.addLast(SSL_HANDLER, new SslHandler(engine));
+		} 
+	}
+	
+	/**
+	 * Adds the socketio channel handlers
+	 * 
+	 * @param pipeline - channel pipeline
+	 */
+	protected void addSocketioHandlers(ChannelPipeline pipeline) {
+		pipeline.addLast(HTTP_REQUEST_DECODER, new HttpRequestDecoder(configuration.getHttpDecoderConfig()));
+		pipeline.addLast(HTTP_AGGREGATOR, new HttpObjectAggregator(configuration.getMaxHttpContentLength()) {
+			@Override
+			protected Object newContinueResponse(HttpMessage start, int maxContentLength, ChannelPipeline pipeline) {
+				return null;
+			}
+		});
+		pipeline.addLast(HTTP_ENCODER, new HttpResponseEncoder());
+		if (configuration.isHttpCompression()) {
+			pipeline.addLast(HTTP_COMPRESSION, new HttpContentCompressor());
+		}
+		
+		pipeline.addLast(PACKET_HANDLER, packetHandler);
+		
+		pipeline.addLast(AUTHORIZE_HANDLER, authorizeHandler);
+		pipeline.addLast(XHR_POLLING_TRANSPORT, xhrPollingTransport);
+		if (configuration.isWebsocketCompression()) {
+			pipeline.addLast(WEB_SOCKET_TRANSPORT_COMPRESSION, new WebSocketServerCompressionHandler());
+		}
+		pipeline.addLast(WEB_SOCKET_TRANSPORT, webSocketTransport);
+		
+		pipeline.addLast(SOCKETIO_ENCODER, encoderHandler);
+		
+		pipeline.addLast(WRONG_URL_HANDLER, wrongUrlHandler);
+	}
+	
+	private SSLContext createSSLContext(Configuration configuration) throws Exception {
+		TrustManager[] managers = null;
+		if (configuration.getTrustStore() != null) {
+			KeyStore ts = KeyStore.getInstance(configuration.getTrustStoreFormat());
+			ts.load(configuration.getTrustStore(), configuration.getTrustStorePassword().toCharArray());
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init(ts);
+			managers = tmf.getTrustManagers();
+		}
+		
+		KeyStore ks = KeyStore.getInstance(configuration.getKeyStoreFormat());
+		ks.load(configuration.getKeyStore(), configuration.getTrustStorePassword().toCharArray());
+		
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		kmf.init(ks, configuration.getKeyStorePassword().toCharArray());
+		
+		SSLContext serverContext = SSLContext.getInstance(configuration.getSSLProtocol());
+		serverContext.init(kmf.getKeyManagers(), managers, null);
+		return serverContext;
+	}
+	
+	@Override
+	public void onDisconnect(ClientHead client) {
+		ackManager.onDisconnect(client);
+		authorizeHandler.onDisconnect(client);
+		configuration.getStoreFactory().onDisconnect(client);
+		
+		configuration.getStoreFactory().pubSubStore().publis(PubSubType.DISCONNECT, new DisconnectMessage(client.getSessionId()));
+		
+		log.debug("Client with sessionId: {} disconnected", client.getSessionId());
+	}
+	
+	public void stop() {
+		StoreFactory factory = configuration.getStoreFactory();
+		factory.shutdown();
+		scheduler.shutdown();
 	}
 }

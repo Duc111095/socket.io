@@ -2,6 +2,10 @@ package com.ducnh.socket.io.listener;
 
 import java.util.List;
 
+import com.ducnh.socket.io.SocketIOClient;
+
+import io.netty.channel.ChannelHandlerContext;
+
 public abstract class ExceptionListenerAdapter implements ExceptionListener{
 
 	@Override
@@ -21,7 +25,7 @@ public abstract class ExceptionListenerAdapter implements ExceptionListener{
 	
 	@Override
 	public boolean exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
-		
+		return false;
 	}
 	
 	@Override

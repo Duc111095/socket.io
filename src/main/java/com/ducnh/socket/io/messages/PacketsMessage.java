@@ -1,5 +1,7 @@
 package com.ducnh.socket.io.messages;
 
+import com.ducnh.socket.io.Transport;
+
 import io.netty.buffer.ByteBuf;
 
 public class PacketsMessage {

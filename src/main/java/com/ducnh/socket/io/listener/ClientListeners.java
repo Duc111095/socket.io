@@ -8,7 +8,7 @@ public interface ClientListeners {
 	
 	void addEventInterceptor(EventInterceptor eventInterceptor);
 	
-	void addDisconnectListener(DiconnectListener listener);
+	void addDisconnectListener(DisconnectListener listener);
 	
 	void addConnectListener(ConnectListener listener);
 	

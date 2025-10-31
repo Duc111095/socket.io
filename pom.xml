@@ -200,7 +200,7 @@
 	</dependency>
 	<dependency>
 		<groupId>com.ducnh</groupId>
-		<artifactId>highperformance</artifactId>
+		<artifactId>syncfilekafka</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
 </dependencies>

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ducnh.socket.io.AckCallback;
+import com.ducnh.socket.io.MultiTypeAckCallback;
 import com.ducnh.socket.io.namespace.Namespace;
 import com.esotericsoftware.minlog.Log;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -78,7 +79,7 @@ public class JacksonJsonSupport implements JsonSupport {
 				
 				Class<?> clazz = callback.getResultClass();
 				if (callback instanceof MultiTypeAckCallback) {
-					MutliTypeAckCallback multiTypeAckCallback = (MultiTypeAckCallback) callback;
+					MultiTypeAckCallback multiTypeAckCallback = (MultiTypeAckCallback) callback;
 					clazz = multiTypeAckCallback.getResultClasses()[i];
 				}
 				

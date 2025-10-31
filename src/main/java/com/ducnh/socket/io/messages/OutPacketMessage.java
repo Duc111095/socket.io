@@ -1,5 +1,7 @@
 package com.ducnh.socket.io.messages;
 
+import com.ducnh.socket.io.Transport;
+
 public class OutPacketMessage extends HttpMessage{
 	
 	private final ClientHead clientHead;

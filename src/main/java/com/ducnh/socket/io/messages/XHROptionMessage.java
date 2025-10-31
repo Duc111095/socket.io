@@ -1,8 +1,10 @@
 package com.ducnh.socket.io.messages;
 
+import java.util.UUID;
+
 public class XHROptionMessage extends XHRPostMessage{
 
-	public XHRPostMessage(String origin, UUID sessionId) {
+	public XHROptionMessage(String origin, UUID sessionId) {
 		super(origin, sessionId);
 	}
 }
