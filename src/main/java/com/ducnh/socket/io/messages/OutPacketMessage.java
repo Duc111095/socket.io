@@ -1,6 +1,7 @@
 package com.ducnh.socket.io.messages;
 
 import com.ducnh.socket.io.Transport;
+import com.ducnh.socket.io.handler.ClientHead;
 
 public class OutPacketMessage extends HttpMessage{
 	
@@ -14,11 +15,11 @@ public class OutPacketMessage extends HttpMessage{
 		this.transport = transport;
 	}
 	
-	public Transport getTransport() {
-		return transport;
-	}
-	
 	public ClientHead getClientHead() {
 		return clientHead;
+	}
+	
+	public Transport getTransport() {
+		return transport;
 	}
 }

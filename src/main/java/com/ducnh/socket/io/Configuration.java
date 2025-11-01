@@ -6,7 +6,11 @@ import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 
+import com.ducnh.socket.io.listener.DefaultExceptionListener;
+import com.ducnh.socket.io.listener.ExceptionListener;
 import com.ducnh.socket.io.protocol.JsonSupport;
+import com.ducnh.socket.io.store.MemoryStoreFactory;
+import com.ducnh.socket.io.store.StoreFactory;
 
 import io.netty.handler.codec.http.HttpDecoderConfig;
 
@@ -53,7 +57,7 @@ public class Configuration {
 	
 	private SocketConfig socketConfig =  new SocketConfig();
 	
-	private StoreFactory storeFactory = new MemoryFactory();
+	private StoreFactory storeFactory = new MemoryStoreFactory();
 	
 	private JsonSupport jsonSupport;
 	
@@ -285,7 +289,7 @@ public class Configuration {
 		this.storeFactory = storeFactory;
 	}
 	
-	public StoreFactory() getStoreFactory() {
+	public StoreFactory getStoreFactory() {
 		return storeFactory;
 	}
 	
