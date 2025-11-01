@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.ducnh.socket.io.SocketIOClient;
+import com.ducnh.socket.io.listener.DisconnectListener;
 import com.ducnh.socket.io.namespace.Namespace;
 
 public class OnDisconnectScanner implements AnnotationScanner{
@@ -19,7 +21,7 @@ public class OnDisconnectScanner implements AnnotationScanner{
 			@Override
 			public void onDisconnect(SocketIOClient client) {
 				try {
-					method.invoke(objec, client);
+					method.invoke(object, client);
 				} catch (InvocationTargetException e) {
 					throw new SocketIOException(e.getCause());
 				} catch (Exception e) {

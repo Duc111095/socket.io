@@ -7,8 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import com.ducnh.socket.io.namespace.Namespace;
 import com.ducnh.socket.io.protocol.JsonSupport;
+import com.ducnh.socket.io.store.StoreFactory;
 
-public abstract class BaseStoreFactory implements StoreFactory{
+public abstract class BaseStoreFactory implements StoreFactory {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private Long nodeId = (long) (Math.random() * 1000000);

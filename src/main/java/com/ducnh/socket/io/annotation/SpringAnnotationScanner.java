@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.util.ReflectionUtils.MethodFilter;
+
+import com.ducnh.socket.io.SocketIOServer;
 
 public class SpringAnnotationScanner implements BeanPostProcessor {
 
@@ -44,10 +48,9 @@ public class SpringAnnotationScanner implements BeanPostProcessor {
 	}
 	
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throw BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		final AtomicBoolean add = new AtomicBoolean();
-		ReflectionUtils.doWithMethods(bean.getClass(), 
-				new MethodCallback() {
+		ReflectionUtils.doWithMethods(bean.getClass(), new MethodCallback() {
 			@Override
 			public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
 				add.set(true);

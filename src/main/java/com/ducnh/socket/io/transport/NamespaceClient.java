@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ducnh.socket.io.SocketIOClient;
+import com.ducnh.socket.io.Transport;
 import com.ducnh.socket.io.namespace.Namespace;
 import com.ducnh.socket.io.protocol.EngineIOVersion;
 

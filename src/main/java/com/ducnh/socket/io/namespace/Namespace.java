@@ -7,6 +7,6 @@ import com.ducnh.socket.io.SocketIONamespace;
  * Namespace shares by different namespace-clients.
  * 
  */
-public class Namespace implements SocketIONamespace{
+public class Namespace implements SocketIONamespace {
 
 }

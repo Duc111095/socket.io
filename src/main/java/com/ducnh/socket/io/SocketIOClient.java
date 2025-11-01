@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.ducnh.socket.io.protocol.EngineIOVersion;
 import com.ducnh.socket.io.protocol.Packet;
 import com.ducnh.socket.io.store.Store;
+import com.ducnh.socket.io.Transport;
+import com.ducnh.socket.io.SocketIONamespace;
 
 public interface SocketIOClient extends ClientOperations, Store{
 

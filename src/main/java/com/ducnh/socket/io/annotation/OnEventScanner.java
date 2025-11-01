@@ -6,6 +6,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ducnh.socket.io.AckRequest;
+import com.ducnh.socket.io.MultiTypeArgs;
+import com.ducnh.socket.io.SocketIOClient;
+import com.ducnh.socket.io.listener.DataListener;
+import com.ducnh.socket.io.listener.MultiTypeEventListener;
 import com.ducnh.socket.io.namespace.Namespace;
 
 public class OnEventScanner implements AnnotationScanner{

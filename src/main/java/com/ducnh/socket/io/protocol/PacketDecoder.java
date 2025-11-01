@@ -123,7 +123,7 @@ public class PacketDecoder {
 		return new String(bytes, CharsetUtil.UTF_8);
 	}
 	
-	private Packet decode(ClientHeader head, ByteBuf frame) throws IOException {
+	private Packet decode(ClientHead head, ByteBuf frame) throws IOException {
 		Packet lastPacket = head.getLastBinaryPacket();
 		// Assume attachments follow.
 		if (lastPacket != null) {

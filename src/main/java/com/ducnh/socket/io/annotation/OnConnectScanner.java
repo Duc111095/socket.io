@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.ducnh.socket.io.SocketIOClient;
+import com.ducnh.socket.io.listener.ConnectListener;
 import com.ducnh.socket.io.namespace.Namespace;
 
 public class OnConnectScanner implements AnnotationScanner{
