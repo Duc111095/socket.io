@@ -13,6 +13,7 @@ public class MemoryStore implements Store{
 		store.put(key, val);
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@Override
 	public <T> T get(String key) {
 		return (T) store.get(key);

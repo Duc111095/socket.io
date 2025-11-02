@@ -5,7 +5,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ducnh.socket.io.handler.AuthorizeHandler;
+import com.ducnh.socket.io.handler.ClientHead;
 import com.ducnh.socket.io.namespace.Namespace;
+import com.ducnh.socket.io.namespace.NamespacesHub;
 import com.ducnh.socket.io.protocol.JsonSupport;
 import com.ducnh.socket.io.store.StoreFactory;
 
@@ -19,7 +22,7 @@ public abstract class BaseStoreFactory implements StoreFactory {
 	}
 	
 	@Override
-	public void init(final NamespaceHub namespacesHub, final AuthorizeHeader authorizeHeader, JsonSupport jsonSupport) {
+	public void init(final NamespacesHub namespacesHub, final AuthorizeHandler authorizeHeader, JsonSupport jsonSupport) {
 		pubSubStore().subscribe(PubSubType.DISCONNECT, new PubSubListener<DisconnectMessage>() {
 			@Override
 			public void onMessage(DisconnectMessage msg) {

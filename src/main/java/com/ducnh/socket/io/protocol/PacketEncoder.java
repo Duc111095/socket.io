@@ -272,7 +272,7 @@ public class PacketEncoder {
 						if (!jsonSupport.getArrays().isEmpty()) {
 							packet.initAttachments(jsonSupport.getArrays().size());
 							for (byte[] array : jsonSupport.getArrays()) {
-								packet.addAttachment(Unpooled.wrappedBuffer(array));
+								packet.addAttachments(Unpooled.wrappedBuffer(array));
 							}
 							packet.setSubType(packet.getSubType() == PacketType.ACK
 								? PacketType.BINARY_ACK : PacketType.BINARY_EVENT);
@@ -314,7 +314,7 @@ public class PacketEncoder {
 					}
 					
 					if (encBuf != null) {
-						buf.writableBytes(encBuf);
+						buf.writeBytes(encBuf);
 						encBuf.release();
 					}
 					

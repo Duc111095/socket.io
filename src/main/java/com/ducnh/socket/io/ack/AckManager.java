@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ducnh.socket.io.AckCallback;
+import com.ducnh.socket.io.Disconnectable;
 import com.ducnh.socket.io.MultiTypeAckCallback;
 import com.ducnh.socket.io.MultiTypeArgs;
 import com.ducnh.socket.io.SocketIOClient;
+import com.ducnh.socket.io.handler.ClientHead;
 import com.ducnh.socket.io.protocol.Packet;
 import com.ducnh.socket.io.scheduler.CancelableScheduler;
 import com.ducnh.socket.io.scheduler.SchedulerKey.Type;
@@ -22,7 +24,7 @@ import com.ducnh.socket.io.scheduler.SchedulerKey;
 
 import io.netty.util.internal.PlatformDependent;
 
-public class AckManager {
+public class AckManager implements Disconnectable{
 
 	static class AckEntry {
 		final Map<Long, AckCallback<?>> ackCallbacks = PlatformDependent.newConcurrentHashMap();
@@ -79,9 +81,9 @@ public class AckManager {
 		return ackEntry;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void onAck(SocketIOClient client, Packet packet) {
-		AckSchedulerKey key = new AckSchedulerKey(Type.ACK_TIMEOUT, client.getSessionId()hashCode(), packet.getAckId());
+		AckSchedulerKey key = new AckSchedulerKey(Type.ACK_TIMEOUT, client.getSessionId(), packet.getAckId());
 		scheduler.cancel(key);
 		
 		AckCallback callback = removeCallback(client.getSessionId(), packet.getAckId());
@@ -155,7 +157,7 @@ public class AckManager {
 		Set<Long> indexes = e.getAckIndexes();
 		
 		for (Long index : indexes) {
-			AckCallback<?> callback = e.getAckCallback(index);
+			AckCallback<?> callback = e.getCallback(index);
 			if (callback != null) {
 				callback.onTimeout();
 			}

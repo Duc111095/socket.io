@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.ducnh.socket.io.AckCallback;
 import com.ducnh.socket.io.MultiTypeAckCallback;
 import com.ducnh.socket.io.namespace.Namespace;
-import com.esotericsoftware.minlog.Log;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -45,7 +44,6 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.ArrayType;
 

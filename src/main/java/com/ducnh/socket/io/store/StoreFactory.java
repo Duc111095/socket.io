@@ -3,7 +3,7 @@ package com.ducnh.socket.io.store;
 import java.util.Map;
 import java.util.UUID;
 
-import com.ducnh.socket.io.AuthorizeHandler;
+import com.ducnh.socket.io.handler.AuthorizeHandler;
 import com.ducnh.socket.io.Disconnectable;
 import com.ducnh.socket.io.namespace.NamespacesHub;
 import com.ducnh.socket.io.protocol.JsonSupport;

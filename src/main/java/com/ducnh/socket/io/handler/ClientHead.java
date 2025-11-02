@@ -193,7 +193,7 @@ public class ClientHead {
 		return client;
 	}
 	
-	public Set<Namespace> getNamespace() {
+	public Set<Namespace> getNamespaces() {
 		return namespaceClients.keySet();
 	}
 	

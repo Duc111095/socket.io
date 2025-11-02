@@ -1,6 +1,7 @@
 package com.ducnh.socket.io.messages;
 
 import com.ducnh.socket.io.Transport;
+import com.ducnh.socket.io.handler.ClientHead;
 
 import io.netty.buffer.ByteBuf;
 
@@ -20,8 +21,8 @@ public class PacketsMessage {
 		return transport;
 	}
 	
-	public ClientHead getClientHead() {
-		return clientHead;
+	public ClientHead getClient() {
+		return client;
 	}
 	
 	public ByteBuf getContent() {

@@ -35,6 +35,7 @@ public class RedissonPubSubStore implements PubSubStore {
 		redissonPub.getTopic(type.toString()).publish(msg);
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public <T extends PubSubMessage> void subscribe(PubSubType type, PubSubListener<T> listener, Class<T> clazz) {
 		String name = type.toString();

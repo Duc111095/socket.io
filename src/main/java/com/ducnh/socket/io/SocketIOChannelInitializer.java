@@ -11,12 +11,22 @@ import javax.net.ssl.TrustManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ducnh.socket.io.ack.AckManager;
+import com.ducnh.socket.io.handler.ClientHead;
+import com.ducnh.socket.io.handler.ClientsBox;
+import com.ducnh.socket.io.handler.EncoderHandler;
+import com.ducnh.socket.io.handler.InPacketHandler;
+import com.ducnh.socket.io.handler.PacketListener;
+import com.ducnh.socket.io.handler.WrongUrlHandler;
 import com.ducnh.socket.io.namespace.NamespacesHub;
 import com.ducnh.socket.io.protocol.JsonSupport;
 import com.ducnh.socket.io.protocol.PacketDecoder;
 import com.ducnh.socket.io.protocol.PacketEncoder;
 import com.ducnh.socket.io.scheduler.CancelableScheduler;
 import com.ducnh.socket.io.scheduler.HashedWheelTimeoutScheduler;
+import com.ducnh.socket.io.store.StoreFactory;
+import com.ducnh.socket.io.store.pubsub.DisconnectMessage;
+import com.ducnh.socket.io.store.pubsub.PubSubType;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,7 +62,7 @@ public class SocketIOChannelInitializer extends ChannelInitializer<Channel> impl
 	
 	private AckManager ackManager;
 	
-	private ClientBox clientBox = new ClientBox();
+	private ClientsBox clientsBox = new ClientsBox();
 	private AuthorizeHandler authorizeHandler;
 	private PollingTransport xhrPollingTransport;
 	private WebsocketTransport webSocketTransport;
@@ -91,12 +101,12 @@ public class SocketIOChannelInitializer extends ChannelInitializer<Channel> impl
 		}
 		
 		StoreFactory factory = configuration.getStoreFactory();
-		authorizeHeader = new AuthorizeHeader(connectPath, scheduler, configuration, namespaceHub, factory, this, ackManager, clientsBox);
-		factory.init(namespaceHub, authorizeHandler, jsonSupport);
+		authorizeHeader = new AuthorizeHandler(connectPath, scheduler, configuration, namespacesHub, factory, this, ackManager, clientsBox);
+		factory.init(namespacesHub, authorizeHandler, jsonSupport);
 		xhrPollingTransport = new PollingTransport(decoder, authorizeHeader, clientsBox);
 		webSocketTransport = new WebSocketTransport(isSsl, authorizeHeader, configuration, scheduler, clientsBox);
 		
-		PacketListener packetListener = new PacketListener(ackManager, namespaceHub, xhrPollingTransport, scheduler);
+		PacketListener packetListener = new PacketListener(ackManager, namespacesHub, xhrPollingTransport, scheduler);
 		
 		try {
 			encoderHandler = new EncoderHandler(configuration, encoder);
@@ -188,7 +198,7 @@ public class SocketIOChannelInitializer extends ChannelInitializer<Channel> impl
 		authorizeHandler.onDisconnect(client);
 		configuration.getStoreFactory().onDisconnect(client);
 		
-		configuration.getStoreFactory().pubSubStore().publis(PubSubType.DISCONNECT, new DisconnectMessage(client.getSessionId()));
+		configuration.getStoreFactory().pubSubStore().publish(PubSubType.DISCONNECT, new DisconnectMessage(client.getSessionId()));
 		
 		log.debug("Client with sessionId: {} disconnected", client.getSessionId());
 	}

@@ -180,7 +180,7 @@ public class Namespace implements SocketIONamespace {
 			leave(roomClients, joinedRoom, client.getSessionId());
 		}
 		clientRooms.remove(client.getSessionId());
-		storeFactory.pubSubStore().publish(PubSubType.BULK_LEAVE, new BulkJoinLeaveMessage(client.getSessionId(), roomsToLeave));
+		storeFactory.pubSubStore().publish(PubSubType.BULK_LEAVE, new BulkJoinLeaveMessage(client.getSessionId(), roomsToLeave, getName()));
 		
 		try {
 			for (DisconnectListener listener : disconnectListeners) {
@@ -244,6 +244,7 @@ public class Namespace implements SocketIONamespace {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addListeners(Object listeners) {
 		if (listeners instanceof Iterable) {
@@ -260,6 +261,7 @@ public class Namespace implements SocketIONamespace {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addListeners(Object listeners, Class<?> listenersClass) {
 		if (listeners instanceof Iterable) {
@@ -272,6 +274,13 @@ public class Namespace implements SocketIONamespace {
 	public void joinRoom(String room, UUID sessionId) {
 		join(room, sessionId);
 		storeFactory.pubSubStore().publish(PubSubType.JOIN, new JoinLeaveMessage(sessionId, room, getName()));
+	} 
+	
+	public void joinRooms(Set<String> rooms, UUID sessionId) {
+		for (String room : rooms) {
+			join(room, sessionId);
+		}
+		storeFactory.pubSubStore().publish(PubSubType.BULK_JOIN, new BulkJoinLeaveMessage(sessionId, rooms, getName()));
 	} 
 	
 	public void dispatch(String room, Packet packet) {

@@ -5,7 +5,7 @@ public abstract class MultiTypeAckCallback extends AckCallback<MultiTypeArgs>{
 	private Class<?>[] resultClasses;
 	
 	public MultiTypeAckCallback(Class<?>... resultClasses) {
-		super(MultiTypeAck.class);
+		super(MultiTypeArgs.class);
 		this.resultClasses = resultClasses;
 	}
 	

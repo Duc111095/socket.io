@@ -79,6 +79,7 @@ public class ScannerEngine {
 		return Arrays.equals(method1.getParameterTypes(), method2.getParameterTypes());
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void makeAccessible(Method method) {
 		if ((!Modifier.isPublic(method.getModifiers()) || !Modifier.isPublic(method.getDeclaringClass().getModifiers())) 
 				&& !method.isAccessible()) {

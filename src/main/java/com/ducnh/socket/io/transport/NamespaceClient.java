@@ -44,7 +44,7 @@ public class NamespaceClient implements SocketIOClient{
 	
 	@Override
 	public EngineIOVersion getEngineIOVersion() {
-		return baseClient.getCurrentTransport();
+		return baseClient.getEngineIOVersion();
 	}
 	
 	@Override
@@ -68,7 +68,7 @@ public class NamespaceClient implements SocketIOClient{
 	
 	@Override
 	public void sendEvent(String name, AckCallback<?> ackCallback, Object... data) {
-		Packet packet = new Packet(PackeType.MESSAGE, getEngineIOVersion());
+		Packet packet = new Packet(PacketType.MESSAGE, getEngineIOVersion());
 		packet.setSubType(PacketType.EVENT);
 		packet.setName(name);
 		packet.setData(Arrays.asList(data));
@@ -185,7 +185,7 @@ public class NamespaceClient implements SocketIOClient{
 	
 	@Override
 	public void leaveRooms(Set<String> rooms) {
-		namespace.leaveRoom(rooms, getSessionId());
+		namespace.leaveRooms(rooms, getSessionId());
 	}
 	
 	@Override

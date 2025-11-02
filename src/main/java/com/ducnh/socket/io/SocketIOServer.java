@@ -17,6 +17,7 @@ import com.ducnh.socket.io.listener.EventInterceptor;
 import com.ducnh.socket.io.listener.MultiTypeEventListener;
 import com.ducnh.socket.io.listener.PingListener;
 import com.ducnh.socket.io.listener.PongListener;
+import com.ducnh.socket.io.namespace.Namespace;
 import com.ducnh.socket.io.namespace.NamespacesHub;
 
 import io.netty.bootstrap.ServerBootstrap;

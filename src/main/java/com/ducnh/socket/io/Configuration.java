@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 
+import com.ducnh.socket.io.handler.SuccessAuthorizationListener;
 import com.ducnh.socket.io.listener.DefaultExceptionListener;
 import com.ducnh.socket.io.listener.ExceptionListener;
 import com.ducnh.socket.io.protocol.JsonSupport;

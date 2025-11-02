@@ -18,6 +18,7 @@ public class RedissonStore implements Store{
 		map.put(key, val);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T get(String key) {
 		return (T) map.get(key);

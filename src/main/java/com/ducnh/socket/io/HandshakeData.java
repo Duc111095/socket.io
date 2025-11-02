@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import io.netty.handler.codec.http.HttpHeaders;
+
 public class HandshakeData implements Serializable{
 
 	private static final long serialVersionUID = -8903479016341138093L;
@@ -24,7 +26,7 @@ public class HandshakeData implements Serializable{
 	}
 	
 	public HandshakeData(HttpHeaders headers, Map<String, List<String>> urlParams, InetSocketAddress address, String url, boolean xdomain) {
-		this(headers, urlParams, address, null, url, xdomain);
+		this(headers, urlParams, address, null, url,xdomain);
 	}
 	
 	public HandshakeData(HttpHeaders headers, Map<String, List<String>> urlParams, InetSocketAddress address, InetSocketAddress local, String url, boolean xdomain) {

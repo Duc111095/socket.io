@@ -12,6 +12,9 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import com.ducnh.socket.io.AckCallback;
+import com.ducnh.socket.io.ack.AckManager;
+import com.ducnh.socket.io.handler.ClientHead;
+import com.ducnh.socket.io.namespace.Namespace;
 
 public class PacketDecoder {
 
@@ -201,7 +204,7 @@ public class PacketDecoder {
 	
 	private Packet addAttachment(ClientHead head, ByteBuf frame, Packet binaryPacket) throws IOException {
 		ByteBuf attachBuf = Base64.encode(frame);
-		binaryPacket.addAttachment(Unpooled.copiedBuffer(attachBuf));
+		binaryPacket.addAttachments(Unpooled.copiedBuffer(attachBuf));
 		attachBuf.release();
 		frame.skipBytes(frame.readableBytes());
 		
@@ -256,7 +259,7 @@ public class PacketDecoder {
 				return;
 			}
 			
-			if (packet.hasAttachment() && !packet.isAttachmentsLoaded()) {
+			if (packet.hasAttachments() && !packet.isAttachmentsLoaded()) {
 				packet.setDataSource(Unpooled.copiedBuffer(frame));
 				frame.skipBytes(frame.readableBytes());
 				head.setLastBinaryPacket(packet);

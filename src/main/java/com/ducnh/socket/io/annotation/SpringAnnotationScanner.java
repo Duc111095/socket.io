@@ -25,6 +25,7 @@ public class SpringAnnotationScanner implements BeanPostProcessor {
 
 	private final SocketIOServer socketIOServer;
 	
+	@SuppressWarnings("rawtypes")
 	private Class originalBeanClass;
 	
 	private Object originalBean;

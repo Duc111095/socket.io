@@ -8,6 +8,7 @@ public class IterableCollection<T> extends AbstractCollection<T> {
 
 	private final CompositeIterable<T> iterable;
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public IterableCollection(Iterable<T> iterable) {
 		this(new CompositeIterable(iterable));
 	}

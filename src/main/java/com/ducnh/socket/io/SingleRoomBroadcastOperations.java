@@ -31,7 +31,7 @@ public class SingleRoomBroadcastOperations implements BroadcastOperations {
 	private void dispatch(Packet packet) {
 		this.storeFactory.pubSubStore().publish(
 				PubSubType.DISPATCH,
-				new DispatchMessage(this.room, packet, this.namespace));
+				new DispatchMessage(this.room, namespace, packet));
 	}
 	
 	@Override

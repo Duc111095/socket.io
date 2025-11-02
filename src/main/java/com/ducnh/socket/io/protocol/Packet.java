@@ -8,7 +8,6 @@ import java.util.List;
 import com.ducnh.socket.io.namespace.Namespace;
 
 import io.netty.buffer.ByteBuf;
-import net.bytebuddy.asm.Advice.This;
 
 public class Packet implements Serializable {
 
