@@ -1,5 +1,8 @@
 package com.ducnh.socket.io;
 
+import com.ducnh.socket.io.transport.PollingTransport;
+import com.ducnh.socket.io.transport.WebSocketTransport;
+
 public enum Transport {
 
 	WEBSOCKET(WebSocketTransport.NAME),

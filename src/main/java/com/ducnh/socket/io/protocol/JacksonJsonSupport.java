@@ -294,6 +294,7 @@ public class JacksonJsonSupport implements JsonSupport {
 		init(objectMapper);
 	}
 	
+	@SuppressWarnings("deprecation")
 	protected void init(ObjectMapper objectMapper) {
 		SimpleModule module = new SimpleModule();
 		module.setSerializerModifier(modifier);

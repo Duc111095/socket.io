@@ -8,7 +8,7 @@ public class BroadcastAckCallback<T> {
 	final AtomicBoolean loopFinished = new AtomicBoolean();
 	final AtomicInteger counter =  new AtomicInteger();
 	final AtomicBoolean successExecuted = new AtomicBoolean();
-	final Class<?> resultClass;
+	final Class<T> resultClass;
 	final int timeout;
 	
 	public BroadcastAckCallback(Class<T> resultClass, int timeout) {

@@ -1,7 +1,6 @@
 package com.ducnh.socket.io.handler;
 
 import java.net.InetSocketAddress;
-import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +39,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -47,6 +48,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
+
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Disconnectable{
 
@@ -96,7 +99,7 @@ public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Di
 		if (msg instanceof FullHttpRequest) {
 			FullHttpRequest req = (FullHttpRequest) msg;
 			Channel channel = ctx.channel();
-			QueryStringDecoder queryDecoder = new QueryStringDecoder(req.getUri());
+			QueryStringDecoder queryDecoder = new QueryStringDecoder(req.uri());
 			
 			if (!configuration.isAllowCustomRequests() && !queryDecoder.path().startsWith(connectPath)) {
 				HttpResponse res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
@@ -238,7 +241,7 @@ public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Di
 	public void connect(ClientHead client) {
 		Namespace ns = namespacesHub.get(Namespace.DEFAULT_NAME);
 		
-		if (!client.getNamespace().contains(ns)) {
+		if (!client.getNamespaces().contains(ns)) {
 			Packet packet = new Packet(PacketType.MESSAGE, client.getEngineIOVersion());
 			packet.setSubType(PacketType.CONNECT);
 			if (!EngineIOVersion.V4.equals(client.getEngineIOVersion())) {
